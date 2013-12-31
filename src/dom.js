@@ -7,12 +7,67 @@ var daggy = require('daggy'),
     Store = require('fantasy-stores'),
     Seq = require('fantasy-seqs').Seq,
     
+    fruitful = function() {
+        return ['x', 'y'];
+    },
+    childless = function() {
+        return ['x'];
+    },
+
     DOM = daggy.taggedSum({
-        h1: ['x', 'y'],
-        text: ['x']
+        // Document
+        head: fruitful(),
+        title: childless(),
+        base: childless(),
+        link: childless(),
+        meta: childless(),
+        style: childless(),
+        // Scripting
+        script: childless(),
+        noscript: fruitful(),
+        // Sections
+        body: fruitful(),
+        section: fruitful(),
+        nav: fruitful(),
+        article: fruitful(),
+        aside: fruitful(),
+        h1: fruitful(),
+        h2: fruitful(),
+        h3: fruitful(),
+        h4: fruitful(),
+        h5: fruitful(),
+        h6: fruitful(),
+        header: fruitful(),
+        footer: fruitful(),
+        address: fruitful(),
+        main: fruitful(),
+        // Grouping
+        p: fruitful(),
+        hr: childless(),
+        pre: fruitful(),
+        blockquote: fruitful(),
+        ol: fruitful(),
+        ul: fruitful(),
+        li: fruitful(),
+        dl: fruitful(),
+        dt: fruitful(),
+        dd: fruitful(),
+        figure: fruitful(),
+        figcaption: childless(),
+        div: fruitful(),
+        // Text-level
+        a: fruitful(),
+        em: fruitful(),
+        strong: fruitful(),
+        small: fruitful(),
+        s: fruitful(),
+        cite: fruitful(),
+        q: childless(),
+        // TODO: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
+
+        // Special
+        text: childless()
     });
-
-
 
 DOM.of = function(a) {
     return DOM.text(a);
@@ -36,7 +91,6 @@ DOM.lens = function(property) {
         );
     });
 };
-
 
 // Methods
 DOM.prototype.chain = function(f) {
