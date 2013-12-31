@@ -1,6 +1,6 @@
 var daggy = require('daggy'),
 
-    Lens = require('fantasy-lenses'),
+    Lens = require('fantasy-lenses').Lens,
     Store = require('fantasy-stores'),
     
     DOM = daggy.taggedSum({
@@ -11,18 +11,7 @@ var daggy = require('daggy'),
 DOM.of = function(a) {
     return DOM.text(a);
 };
-DOM.lens = function() {
-    return Lens(function(a) {
-        return Store(
-            function(s) {
-
-            },
-            function() {
-
-            }
-        );
-    });
-};
+DOM.lens = Lens.objectLens('x');
 
 // Methods
 DOM.prototype.chain = function(f) {
@@ -40,7 +29,7 @@ DOM.prototype.map = function(f) {
 DOM.prototype.update = function(f) {
     var m = this;
     return this.chain(function(a) {
-        return m.constructor(f(a));
+        return DOM.lens.run(m).set(f(a));
     });
 };
 

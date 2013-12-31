@@ -21,6 +21,17 @@ exports.dom = {
     'Associativity (Monad)': monad.associativity(λ)(DOM, identity),
 
     'test': function(test) {
+        var a = DOM.h1(1, {}).update(function(x) {
+            return x + 1;
+        });
+        a.cata({
+            h1: function(x, y) {
+                console.log(x);
+            },
+            text: function() {
+                throw new Error('Failed if called');
+            }
+        });
         test.ok(true);
         test.done();
     }
