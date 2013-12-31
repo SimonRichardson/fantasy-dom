@@ -1,7 +1,10 @@
 var λ = require('./lib/test'),
     laws = require('fantasy-check').laws,
+    Seq = require('fantasy-seqs').Seq,
 
-    DOM = require('./../fantasy-dom'),
+    dom = require('./../fantasy-dom'),
+    DOM = dom.DOM,
+    Output = dom.Output,
 
     functor = laws.functor,
     monad = laws.monad,
@@ -21,8 +24,8 @@ exports.dom = {
     'Associativity (Monad)': monad.associativity(λ)(DOM, identity),
 
     'test': function(test) {
-        var a = DOM.h1(1, {}).update(function(x) {
-                return x + 1;
+        var a = DOM.h1({uid:1}, Seq.of(DOM.text('Hello World'))).update(function(x) {
+                return {uid: x.uid + 1};
             }),
             b = a.cata({
                 h1: function(x, y) {
@@ -32,7 +35,7 @@ exports.dom = {
                     throw new Error('Failed if called');
                 }
             });
-        test.ok(b === 2);
+        test.ok(b.uid === 2);
         test.done();
     }
 };

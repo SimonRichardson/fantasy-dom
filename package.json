@@ -36,7 +36,8 @@
   },
   "files": [
       "fantasy-dom.js", 
-      "src/*.js"
+      "src/*.js",
+      "src/output/*.js"
   ],
   "main": "fantasy-dom.js"
 }
