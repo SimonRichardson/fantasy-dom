@@ -22,17 +22,17 @@ exports.dom = {
 
     'test': function(test) {
         var a = DOM.h1(1, {}).update(function(x) {
-            return x + 1;
-        });
-        a.cata({
-            h1: function(x, y) {
-                console.log(x);
-            },
-            text: function() {
-                throw new Error('Failed if called');
-            }
-        });
-        test.ok(true);
+                return x + 1;
+            }),
+            b = a.cata({
+                h1: function(x, y) {
+                    return x;
+                },
+                text: function() {
+                    throw new Error('Failed if called');
+                }
+            });
+        test.ok(b === 2);
         test.done();
     }
 };
