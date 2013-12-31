@@ -1,0 +1,40 @@
+{
+  "name": "fantasy-dom",
+  "version": "0.0.1",
+  "description": "fantasy-dom",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SimonRichardson/fantasy-dom.git"
+  },
+  "keywords": [
+    "fantasyland",
+    "list",
+    "fantasy-dom"
+  ],
+  "author": "Simon Richardson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SimonRichardson/fantasy-dom/issues"
+  },
+  "dependencies": {
+    "daggy": "0.0.x",
+    "fantasy-combinators": "0.0.x",
+    "fantasy-lenses": "0.x.x",
+    "fantasy-stores": "0.x.x"
+  },
+  "devDependencies": {
+    "grunt-cli": "0.1.9",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.0",
+    "fantasy-check": "0.2.0"
+  },
+  "scripts": {
+      "test": "grunt"
+  },
+  "files": [
+      "fantasy-dom.js", 
+      "src/*.js"
+  ],
+  "main": "fantasy-dom.js"
+}
