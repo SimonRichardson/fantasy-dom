@@ -9,7 +9,30 @@ var λ = require('./lib/test'),
     functor = laws.functor,
     monad = laws.monad,
 
-    identity = λ.identity;
+    identity = λ.identity,
+
+    scafold = function(title) {
+        return DOM.html(
+                {},
+                Seq.fromArray([
+                    DOM.head(
+                        {},
+                        Seq.of(
+                            DOM.title(
+                                {},
+                                Seq.fromArray([
+                                    DOM.text(title)
+                                ])
+                            )
+                        )
+                    ),
+                    DOM.body(
+                        {},
+                        Seq.empty()
+                    )
+                ])
+            );
+    };
 
 exports.dom = {
     // Functor tests
@@ -35,6 +58,7 @@ exports.dom = {
                     throw new Error('Failed if called');
                 }
             });
+        console.log(Output.string(scafold('Title')));
         test.ok(b.uid === 2);
         test.done();
     }

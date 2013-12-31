@@ -8,16 +8,20 @@ var daggy = require('daggy'),
     Seq = require('fantasy-seqs').Seq,
     
     fruitful = function() {
-        return ['x', 'y'];
+        return ['x', 'children'];
     },
     childless = function() {
         return ['x'];
     },
+    singleton = function() {
+        return ['x'];
+    },
 
     DOM = daggy.taggedSum({
+        html: fruitful(),
         // Document
         head: fruitful(),
-        title: childless(),
+        title: fruitful(),
         base: childless(),
         link: childless(),
         meta: childless(),
@@ -66,7 +70,9 @@ var daggy = require('daggy'),
         // TODO: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
 
         // Special
-        text: childless()
+        text: singleton(),
+        x: fruitful().concat(['name']),
+        nop: []
     });
 
 DOM.of = function(a) {
