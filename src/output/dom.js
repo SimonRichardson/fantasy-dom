@@ -4,56 +4,15 @@ var IO = require('fantasy-io'),
     combinators = require('fantasy-combinators'),
 
     compose = combinators.compose,
-    constant = combinators.constant,
-
-    identifiers = {
-        'className': 'class'
-    };
-
-function rot(f) {
-    return function() {
-        var args = [].slice.call(arguments);
-        args.unshift(args.pop());
-        return f.apply(null, args);
-    };
-}
+    constant = combinators.constant;
 
 function str(x) {
-    return '' + x;
-}
-
-function identifierName(x) {
-    return x in identifiers ? identifiers[x] : x;
-}
-
-function serialiseAttributes(a) {
-    return a.fold(function(o) {
-        return trimRight(
-            Object.keys(o).map(
-                function(x) {
-                    var z = identifierName(x);
-                    return o[x] ? z + '="' + o[x] + '" ' : str(x);
-                }
-            ).join('')
-        );
-    });
-}
-
-function serialiseChildren(s) {
-    return s.map(output).toArray().join('');
-}
-
-function trimRight(x) {
-    return x.substr(-1) === ' ' ? trimRight(x.substr(0, x.length - 1)) : x;
+    return document.createTextNode(x);
 }
 
 function tag(name) {
     return function(attr, children) {
-        var x = serialiseAttributes(attr),
-            y = serialiseChildren(children),
-            z = x.length < 1 ? x : ' ' + x;
-
-        return '<' + name + z + '>' + y + '</' + name + '>';
+        return document.createElement(name);
     };
 }
 

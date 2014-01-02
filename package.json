@@ -22,7 +22,8 @@
     "fantasy-helpers": "0.x.x",
     "fantasy-lenses": "0.x.x",
     "fantasy-stores": "0.x.x",
-    "fantasy-seqs": "0.x.x"
+    "fantasy-seqs": "0.x.x",
+    "fantasy-io": "0.x.x"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",

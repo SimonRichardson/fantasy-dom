@@ -3,6 +3,7 @@ var λ = require('./lib/test'),
     Seq = require('fantasy-seqs').Seq,
 
     dom = require('./../fantasy-dom'),
+    Attr = dom.Attr,
     DOM = dom.DOM,
     Output = dom.Output,
 
@@ -13,13 +14,13 @@ var λ = require('./lib/test'),
 
     scafold = function(title) {
         return DOM.html(
-                {},
+                Attr.empty(),
                 Seq.fromArray([
                     DOM.head(
-                        {},
+                        Attr.empty(),
                         Seq.of(
                             DOM.title(
-                                {},
+                                Attr.empty(),
                                 Seq.fromArray([
                                     DOM.text(title)
                                 ])
@@ -27,7 +28,7 @@ var λ = require('./lib/test'),
                         )
                     ),
                     DOM.body(
-                        {},
+                        Attr.of({className: 'body'}),
                         Seq.empty()
                     )
                 ])
