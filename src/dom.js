@@ -97,6 +97,9 @@ DOM.lens = function(property) {
         );
     });
 };
+DOM.lenses = {
+    x: DOM.lens('x')
+};
 
 // Methods
 DOM.prototype.chain = function(f) {
@@ -113,7 +116,7 @@ DOM.prototype.map = function(f) {
 // Common
 DOM.prototype.update = function(f) {
     var m = this,
-        lens = DOM.lens('x').run(m);
+        lens = DOM.lenses.x.run(m);
     return this.chain(function(a) {
         return lens.set(f(a));
     });
