@@ -11,12 +11,15 @@ var daggy = require('daggy'),
     Attr = daggy.tagged('x');
 
 Attr.of = function(a) {
-    return Attr(extend(a, {
-        id: guid().unsafePerform()
-    }));
+    return Attr(a);
 };
 Attr.empty = function() {
     return Attr({});
+};
+Attr.withIdent = function(a) {
+    return Attr(extend(a, {
+        id: guid().unsafePerform()
+    }));
 };
 
 // Methods

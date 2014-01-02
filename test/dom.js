@@ -28,7 +28,7 @@ var λ = require('./lib/test'),
                         )
                     ),
                     DOM.body(
-                        Attr.of({className: 'body'}),
+                        Attr.withIdent({className: 'body'}),
                         Seq.empty()
                     )
                 ])
