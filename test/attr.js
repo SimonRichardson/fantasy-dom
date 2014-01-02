@@ -35,8 +35,8 @@ exports.attr = {
             var x = Attr.of(λ.singleton(a, b)),
                 y = x.remove(a);
             return y.get(a).fold(
-                λ.constant(true),
-                λ.constant(false)
+                λ.constant(false),
+                λ.constant(true)
             );
         },
         [String, λ.AnyVal, λ.AnyVal]

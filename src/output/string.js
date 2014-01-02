@@ -1,4 +1,5 @@
 var IO = require('fantasy-io'),
+    Option = require('fantasy-options'),
     DOM = require('../dom'),
 
     combinators = require('fantasy-combinators'),
@@ -6,8 +7,12 @@ var IO = require('fantasy-io'),
     compose = combinators.compose,
     constant = combinators.constant,
 
-    identifiers = {
+    htmlIdentifiers = {
         'className': 'class'
+    },
+    ignoreIdentifiers = {
+        'data-node-name': Option.None,
+        'data-node-value': Option.None
     };
 
 function rot(f) {
@@ -23,7 +28,10 @@ function str(x) {
 }
 
 function identifierName(x) {
-    return x in identifiers ? identifiers[x] : x;
+    return x in htmlIdentifiers ? htmlIdentifiers[x] : x;
+}
+function ignoreIdentifier(x) {
+    return x in ignoreIdentifiers ? ignoreIdentifiers[x] : Option.Some(x);
 }
 
 function serialiseAttributes(a) {
@@ -31,8 +39,13 @@ function serialiseAttributes(a) {
         return trimRight(
             Object.keys(o).map(
                 function(x) {
-                    var z = identifierName(x);
-                    return o[x] ? z + '="' + o[x] + '" ' : str(x);
+                    return ignoreIdentifier(x).fold(
+                        function(x) {
+                            var z = identifierName(x);
+                            return o[x] ? z + '="' + o[x] + '" ' : str(x);
+                        },
+                        constant('')
+                    );
                 }
             ).join('')
         );
@@ -49,70 +62,34 @@ function trimRight(x) {
 
 function tag(name) {
     return function(attr, children) {
-        var x = serialiseAttributes(attr),
-            y = serialiseChildren(children),
-            z = x.length < 1 ? x : ' ' + x;
+        var w = serialiseAttributes(attr),
+            x = serialiseChildren(children),
+            y = w.length < 1 ? w : ' ' + w,
+            z = attr.get('data-node-value').fold(
+                function(x) {
+                    return x.get() + y;
+                },
+                constant(y)
+            );
 
-        return '<' + name + z + '>' + y + '</' + name + '>';
+        return '<' + name + y + '>' + z + '</' + name + '>';
     };
 }
 
 function output(root) {
-    return root.cata({
-        html: tag('html'),
-        // Document
-        head: tag('head'),
-        title: tag('title'),
-        base: tag('base'),
-        link: tag('link'),
-        meta: tag('meta'),
-        style: tag('style'),
-        // Scripting
-        script: tag('script'),
-        noscript: tag('noscript'),
-        // Sections
-        body: tag('body'),
-        section: tag('section'),
-        nav: tag('nav'),
-        article: tag('article'),
-        aside: tag('aside'),
-        h1: tag('h1'),
-        h2: tag('h2'),
-        h3: tag('h3'),
-        h4: tag('h4'),
-        h5: tag('h5'),
-        h6: tag('h6'),
-        header: tag('header'),
-        footer: tag('footer'),
-        address: tag('address'),
-        main: tag('main'),
-        // Grouping
-        p: tag('p'),
-        hr: tag('hr'),
-        pre: tag('pre'),
-        blockquote: tag('blockquote'),
-        ol: tag('ol'),
-        ul: tag('ul'),
-        li: tag('li'),
-        dl: tag('dl'),
-        dt: tag('dt'),
-        dd: tag('dd'),
-        figure: tag('figure'),
-        figcaption: tag('figcaption'),
-        div: tag('div'),
-        // Text-level
-        a: tag('a'),
-        em: tag('em'),
-        strong: tag('strong'),
-        small: tag('small'),
-        s: tag('s'),
-        cite: tag('cite'),
-        q: tag('q'),
-
-        // Special
-        text: str,
-        x: rot(tag),
-        nop: constant(str(''))
+    return root.fold(function(x) {
+        return x.cata({
+            Node: function(a, b) {
+                return a.get('data-node-name').fold(
+                    function(x) {
+                        return tag(x.get())(a, b);
+                    },
+                    function(y) {
+                        throw new Error('Expected Node name got nothing');
+                    }
+                );
+            }
+        });
     });
 }
 

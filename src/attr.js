@@ -1,11 +1,13 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
+    lenses = require('fantasy-lenses'),
     guid = require('./guid'),
 
     extend = helpers.extend,
     singleton = helpers.singleton,
 
-    Lens = require('fantasy-lenses').Lens,
+    Lens = lenses.Lens,
+    PartialLens = lenses.PartialLens,
     Store = require('fantasy-stores'),
     
     Attr = daggy.tagged('x');
@@ -44,11 +46,14 @@ Attr.prototype.add = function(k, v) {
     });
 };
 Attr.prototype.get = function(k) {
-    return Lens.objectLens(k).toPartial().run(this.x);
+    return this.fold(function(x) {
+        return PartialLens.objectLens(k).run(x);
+    });
 };
 Attr.prototype.remove = function(k) {
     return this.map(function(a) {
-        var b = extend(a, {});
+        var b = extend({}, a);
+        b[k] = null;
         delete b[k];
         return b;
     });
