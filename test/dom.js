@@ -24,18 +24,12 @@ exports.dom = {
     'Associativity (Monad)': monad.associativity(λ)(DOM, identity),
 
     'test': function(test) {
-        var a = DOM.h1(Attr.withIdent({}), Seq.of(DOM.text('Hello World'))).update(function(x) {
+        var a = Attr.withIdent({}),
+            b = a.get('id').x.get(),
+            c = DOM.h1(a, Seq.empty()).update(function(x) {
                 return x.update('id', 2);
-            }),
-            b = a.cata({
-                h1: function(x, y) {
-                    return x;
-                },
-                text: function() {
-                    throw new Error('Failed if called');
-                }
             });
-        test.ok(b.get('id').x.get() === 2);
+        test.ok(c.getByIdent(b).x.attr.x.id === 2);
         test.done();
     }
 };

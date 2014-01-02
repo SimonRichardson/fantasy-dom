@@ -2,11 +2,13 @@ var daggy = require('daggy'),
     combinators = require('fantasy-combinators'),
     helpers = require('fantasy-helpers'),
 
+    constant = combinators.constant,
     identity = combinators.identity,
     functionLength = helpers.functionLength,
 
     Lens = require('fantasy-lenses').Lens,
     Store = require('fantasy-stores'),
+    Option = require('fantasy-options'),
     Seq = require('fantasy-seqs').Seq,
     Type = require('./type'),
     
@@ -110,6 +112,7 @@ DOM.lenses = {
 };
 
 // Methods
+// (NOTE) Simon: Chain doesn't make any sense in this context!
 DOM.prototype.chain = function(f) {
     // Note: This is a bit of a hack to prevent the need
     // to provide every single tagged sum to chain!
@@ -118,6 +121,7 @@ DOM.prototype.chain = function(f) {
 };
 
 // Derived
+// (NOTE) Simon: Map doesn't make any sense in this context!
 DOM.prototype.map = function(f) {
     return this.chain(function(a) {
         return DOM.of(f(a));
@@ -125,6 +129,29 @@ DOM.prototype.map = function(f) {
 };
 
 // Common
+DOM.prototype.getByIdent = function(x) {
+    var parental = function(a) {
+            return function(attr, children) {
+                return attr.get('id').fold(
+                    constant(Option.of(a)),
+                    function() {
+                        return children.find(function(a) {
+                            return rec(a, x, y);
+                        });
+                    }
+                );
+            };
+        },
+        rec = function(a, b, c) {
+            return a.toType().fold(
+                parental(a, b, c),
+                parental(a, b, c),
+                constant(Option.None),
+                constant(Option.None)
+            );
+        };
+    return rec(this);
+};
 DOM.prototype.update = function(f) {
     var m = this;
     return m.toType().fold(
