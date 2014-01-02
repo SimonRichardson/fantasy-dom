@@ -1,6 +1,7 @@
 var Attr = require('./src/attr'),
     DOM = require('./src/dom'),
     Output = {
+        io: require('./src/output/io'),
         string: require('./src/output/string')
     };
 
