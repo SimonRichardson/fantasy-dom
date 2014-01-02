@@ -36,11 +36,10 @@ var λ = require('../lib/test'),
     };
 
 exports.string = {
-    /*
     'when testing scaffolding output should return correct value': λ.check(
         function(a) {
             return Output.string(scaffold(a)) === scaffoldOutput(a);
         },
         [String]
-    )*/
+    )
 };

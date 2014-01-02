@@ -66,10 +66,10 @@ function tag(name) {
             x = serialiseChildren(children),
             y = w.length < 1 ? w : ' ' + w,
             z = attr.get('data-node-value').fold(
-                function(x) {
-                    return x.get() + y;
+                function(a) {
+                    return a.get() + x;
                 },
-                constant(y)
+                constant(x)
             );
 
         return '<' + name + y + '>' + z + '</' + name + '>';
