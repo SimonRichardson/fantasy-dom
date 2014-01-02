@@ -1,20 +1,23 @@
 var daggy = require('daggy'),
+    combinators = require('fantasy-combinators'),
     helpers = require('fantasy-helpers'),
 
+    identity = combinators.identity,
     functionLength = helpers.functionLength,
 
     Lens = require('fantasy-lenses').Lens,
     Store = require('fantasy-stores'),
     Seq = require('fantasy-seqs').Seq,
+    Type = require('./type'),
     
     fruitful = function() {
-        return ['x', 'children'];
+        return ['attr', 'children'];
     },
     childless = function() {
-        return ['x'];
+        return ['attr'];
     },
-    singleton = function() {
-        return ['x'];
+    value = function() {
+        return ['value'];
     },
 
     DOM = daggy.taggedSum({
@@ -70,13 +73,16 @@ var daggy = require('daggy'),
         // TODO: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/HTML5_element_list
 
         // Special
-        text: singleton(),
+        text: value(),
         x: fruitful().concat(['name']),
         nop: []
     });
 
 DOM.of = function(a) {
     return DOM.text(a);
+};
+DOM.empty = function() {
+    return DOM.empty;
 };
 DOM.lens = function(property) {
     return Lens(function(o) {
@@ -98,12 +104,17 @@ DOM.lens = function(property) {
     });
 };
 DOM.lenses = {
-    x: DOM.lens('x')
+    attr: DOM.lens('attr'),
+    children: DOM.lens('children'),
+    value: DOM.lens('value')
 };
 
 // Methods
 DOM.prototype.chain = function(f) {
-    return f(this.x);
+    // Note: This is a bit of a hack to prevent the need
+    // to provide every single tagged sum to chain!
+    var type = this.toType();
+    return type.fold(f, f, f, identity);
 };
 
 // Derived
@@ -115,12 +126,37 @@ DOM.prototype.map = function(f) {
 
 // Common
 DOM.prototype.update = function(f) {
-    var m = this,
-        lens = DOM.lenses.x.run(m);
-    return this.chain(function(a) {
-        return lens.set(f(a));
-    });
+    var m = this;
+    return m.toType().fold(
+        modifyAttributes(m, f),
+        modifyAttributes(m, f),
+        modifyValue(m, f),
+        identity
+    );
 };
+
+// IO
+DOM.prototype.toType = function() {
+    return Type.fromDOM(this);
+};
+
+// Private
+function modifyAttributes(o, f) {
+    return function() {
+        return o.chain(function(a) {
+            var lens = DOM.lenses.attr.run(o);
+            return lens.set(f(a));
+        });
+    };
+}
+function modifyValue(o, f) {
+    return function() {
+        return m.chain(function(a) {
+            var lens = DOM.lenses.value.run(o);
+            return lens.set(f(a));
+        });
+    };
+}
 
 // Export
 if(typeof module != 'undefined')

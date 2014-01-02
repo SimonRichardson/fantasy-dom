@@ -43,11 +43,19 @@ Attr.prototype.add = function(k, v) {
         return extend(a, singleton(k, v));
     });
 };
+Attr.prototype.get = function(k) {
+    return Lens.objectLens(k).toPartial().run(this.x);
+};
 Attr.prototype.remove = function(k) {
     return this.map(function(a) {
         var b = extend(a, {});
         delete b[k];
         return b;
+    });
+};
+Attr.prototype.update = function(k, v) {
+    return this.map(function(a) {
+        return Lens.objectLens(k).run(a).set(v);
     });
 };
 

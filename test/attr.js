@@ -19,5 +19,42 @@ exports.attr = {
     'All (Monad)': monad.laws(λ)(Attr, identity),
     'Left Identity (Monad)': monad.leftIdentity(λ)(Attr, identity),
     'Right Identity (Monad)': monad.rightIdentity(λ)(Attr, identity),
-    'Associativity (Monad)': monad.associativity(λ)(Attr, identity)
+    'Associativity (Monad)': monad.associativity(λ)(Attr, identity),
+
+    // Common
+    'when adding attribute value': λ.check(
+        function(a, b, c) {
+            var x = Attr.of(a),
+                y = x.add(b, c);
+            return y.get(b).x.get() === c;
+        },
+        [Object, String, λ.AnyVal]
+    ),
+    'when removing attribute value': λ.check(
+        function(a, b, c) {
+            var x = Attr.of(λ.singleton(a, b)),
+                y = x.remove(a);
+            return y.get(a).fold(
+                λ.constant(true),
+                λ.constant(false)
+            );
+        },
+        [String, λ.AnyVal, λ.AnyVal]
+    ),
+    'when updating attribute value': λ.check(
+        function(a, b, c) {
+            var x = Attr.of(λ.singleton(a, b)),
+                y = x.update(a, c);
+            return y.get(a).x.get() === c;
+        },
+        [String, λ.AnyVal, λ.AnyVal]
+    ),
+    'when updating attribute value should not alter old attribute': λ.check(
+        function(a, b, c) {
+            var x = Attr.of(λ.singleton(a, b)),
+                y = x.update(a, c);
+            return x.get(a).x.get() === b;
+        },
+        [String, λ.AnyVal, λ.AnyVal]
+    )
 };

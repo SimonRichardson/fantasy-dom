@@ -5,35 +5,11 @@ var λ = require('./lib/test'),
     dom = require('./../fantasy-dom'),
     Attr = dom.Attr,
     DOM = dom.DOM,
-    Output = dom.Output,
 
     functor = laws.functor,
     monad = laws.monad,
 
-    identity = λ.identity,
-
-    scafold = function(title) {
-        return DOM.html(
-                Attr.empty(),
-                Seq.fromArray([
-                    DOM.head(
-                        Attr.empty(),
-                        Seq.of(
-                            DOM.title(
-                                Attr.empty(),
-                                Seq.fromArray([
-                                    DOM.text(title)
-                                ])
-                            )
-                        )
-                    ),
-                    DOM.body(
-                        Attr.withIdent({className: 'body'}),
-                        Seq.empty()
-                    )
-                ])
-            );
-    };
+    identity = λ.identity;
 
 exports.dom = {
     // Functor tests
@@ -48,8 +24,8 @@ exports.dom = {
     'Associativity (Monad)': monad.associativity(λ)(DOM, identity),
 
     'test': function(test) {
-        var a = DOM.h1({uid:1}, Seq.of(DOM.text('Hello World'))).update(function(x) {
-                return {uid: x.uid + 1};
+        var a = DOM.h1(Attr.withIdent({}), Seq.of(DOM.text('Hello World'))).update(function(x) {
+                return x.update('id', 2);
             }),
             b = a.cata({
                 h1: function(x, y) {
@@ -59,8 +35,7 @@ exports.dom = {
                     throw new Error('Failed if called');
                 }
             });
-        console.log(Output.string(scafold('Title')));
-        test.ok(b.uid === 2);
+        test.ok(b.get('id').x.get() === 2);
         test.done();
     }
 };
