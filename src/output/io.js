@@ -12,7 +12,7 @@ var IO = require('fantasy-io'),
     Lens = lenses.Lens,
     Tuple2 = tuples.Tuple2,
 
-    defaultTag = IO.of('<{{name}}{{attr}}>{{children}}</{{name}}>'),
+    defaultTag = IO.of('<{{name}}{{attr}}>{{value}}{{children}}</{{name}}>'),
 
     htmlIdentifiers = {
         'className': 'class'
@@ -63,23 +63,27 @@ var IO = require('fantasy-io'),
             });
         };
     },
-    extractName = function(n) {
-        return function(a) {
-            return function(b) {
-                return Tuple2(
-                    a,
-                    n.get('data-node-name').fold(
-                        function(x) {
-                            return x.get();
-                        },
-                        function() {
-                            throw new TypeError('Unexpected TagName: name unknown.');
-                        }
-                    )
-                );
+    extractAttribute = function(x, y) {
+        return function(n) {
+            return function(a) {
+                return function(b) {
+                    return Tuple2(
+                        a,
+                        n.get(x).fold(
+                            function(x) {
+                                return x.get();
+                            },
+                            y
+                        )
+                    );
+                };
             };
         };
     },
+    extractName = extractAttribute('data-node-name', function() {
+        throw new TypeError('Unexpected TagName: name unknown.');
+    }),
+    extractValue = extractAttribute('data-node-value', constant('')),
     extractAttributes = function(n) {
         return function(a) {
             return function(b) {
@@ -141,6 +145,7 @@ var IO = require('fantasy-io'),
     },
     replaceName = replace(/{{name}}/g),
     replaceAttribute = replace(/{{attr}}/g),
+    replaceValue = replace(/{{value}}/g),
     // Tag
     tag = function(a) {
         return function(b) {
@@ -154,6 +159,9 @@ var IO = require('fantasy-io'),
                 .chain(compose(M.modify)(extractAttributes(a._1)))
                 .chain(compose(M.modify)(padAttributes))
                 .chain(compose(M.modify)(replaceAttribute))
+                .chain(constant(M.get))
+                .chain(compose(M.modify)(extractValue(a._1)))
+                .chain(compose(M.modify)(replaceValue))
                 .chain(constant(M.get))
                 .chain(compose(M.modify)(extractChildren(a._2)))
                 .chain(constant(M.get))
