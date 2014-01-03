@@ -88,6 +88,25 @@ Tree.prototype.filter = function(f) {
     };
     return rec(this);
 };
+Tree.prototype.find = function(f) {
+    var rec = function(a) {
+        return a.cata({
+            Node: function(x, y) {
+                if(f(x)) {
+                    return Option.of(a);
+                } else {
+                    return y.find(function(a) {
+                        return rec(a).fold(
+                            constant(true),
+                            constant(false)
+                        );
+                    });
+                }
+            }
+        });
+    };
+    return rec(this);
+};
 
 // IO
 Tree.prototype.toSeq = function() {

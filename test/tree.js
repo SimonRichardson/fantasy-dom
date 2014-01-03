@@ -1,8 +1,11 @@
 var λ = require('./lib/test'),
     laws = require('fantasy-check').laws,
+    combinators = require('fantasy-combinators'),
     Seq = require('fantasy-seqs').Seq,
 
     Tree = require('./../src/tree'),
+
+    constant = combinators.constant,
 
     applicative = laws.applicative,
     functor = laws.functor,
@@ -31,6 +34,8 @@ var λ = require('./lib/test'),
             };
         return rec(a, '', 0);
     };
+
+λ.goal = 2;
 
 exports.tree = {
     
@@ -90,6 +95,33 @@ exports.tree = {
         },
         [Number]
     ),
+    /*'when testing find should return correct value': λ.check(
+        function(a) {
+            var x = Tree.of(1).add(
+                    Tree.of(2).add(
+                        Tree.of(a).add(
+                            Tree.of(4)
+                        )
+                    )
+                ).add(
+                    Tree.of(5)
+                ).add(
+                    Tree.of(6)
+                ),
+
+                y = x.find(function(x) {
+                    return a === x;
+                });
+
+            return y.fold(
+                function(b) {
+                    return a === b.x;
+                },
+                constant(false)
+            );
+        },
+        [Number]
+    ),*/
     'when testing toSeq should return correct value': λ.check(
         function(a, b) {
             var x = Tree.of(a).add(Tree.of(b));

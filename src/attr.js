@@ -20,6 +20,7 @@ Attr.empty = function() {
 };
 Attr.withIdent = function(a) {
     return Attr(extend(a, {
+        // I don't like this here!
         id: guid().unsafePerform()
     }));
 };
@@ -45,6 +46,9 @@ Attr.prototype.map = function(f) {
 };
 
 // Common
+Attr.prototype.getIdent = function() {
+    return get('id').getOrElse('');
+};
 Attr.prototype.add = function(k, v) {
     return this.map(function(a) {
         return extend(a, singleton(k, v));
