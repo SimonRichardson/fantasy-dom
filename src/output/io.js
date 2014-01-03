@@ -72,7 +72,9 @@ var IO = require('fantasy-io'),
                         function(x) {
                             return x.get();
                         },
-                        constant('x-invalid-tag-name')
+                        function() {
+                            throw new TypeError('Unexpected TagName: name unknown.');
+                        }
                     )
                 );
             };
