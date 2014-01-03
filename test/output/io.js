@@ -14,7 +14,7 @@ var λ = require('../lib/test'),
 
     scaffold = function(title) {
         return DOM.html(
-                Attr.empty(),
+                Attr.of({data: 'stuff'}),
                 Seq.fromArray([
                     DOM.head(
                         Attr.empty(),

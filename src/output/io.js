@@ -4,10 +4,12 @@ var IO = require('fantasy-io'),
     
     combinators = require('fantasy-combinators'),
     tuples = require('fantasy-tuples'),
+    lenses = require('fantasy-lenses'),
 
     compose = combinators.compose,
     constant = combinators.constant,
 
+    Lens = lenses.Lens,
     Tuple2 = tuples.Tuple2,
 
     defaultTag = IO.of('<{{name}}{{attr}}>{{children}}</{{name}}>'),
@@ -49,7 +51,18 @@ var IO = require('fantasy-io'),
             );
         });
     },
-
+    // Extraction
+    extract = function() {
+        return function(a) {
+            return a.fold(function(x) {
+                return x.cata({
+                    Node: function(a, b) {
+                        return Tuple2(a, b);
+                    }
+                });
+            });
+        };
+    },
     extractName = function(n) {
         return function(a) {
             return function(b) {
@@ -59,7 +72,7 @@ var IO = require('fantasy-io'),
                         function(x) {
                             return x.get();
                         },
-                        constant('xxxx')
+                        constant('x-invalid-tag-name')
                     )
                 );
             };
@@ -75,27 +88,60 @@ var IO = require('fantasy-io'),
             };
         };
     },
-    replaceName = function(a) {
-        return function(b) {
-            return b._1.replace(/{{name}}/g, b._2);
-        };
-    },
-    replaceAttribute = function(a) {
-        return function(b) {
-            return b._1.replace(/{{attr}}/g, b._2);
-        };
-    },
-    extract = function() {
+    extractChildren = function(x) {
         return function(a) {
-            return a.fold(function(x) {
-                return x.cata({
-                    Node: function(a, b) {
-                        return Tuple2(a, b);
-                    }
-                });
-            });
+            return function(b) {
+                return Tuple2(
+                    b,
+                    x.map(output)
+                );
+            };
         };
     },
+    // Pad
+    padAttributes = function() {
+        return function(a) {
+            // We have to pad for the attributes
+            var lens = Lens.objectLens('_2').run(a),
+                val = lens.get(),
+                pad = val.length > 1 ? ' ' + val : val;
+
+            return lens.set(pad);
+        };
+    },
+    // Chain
+    chainChildren = function() {
+        var M = State.StateT(IO),
+            rec = function(x) {
+                return function(a, b) {
+                    return a
+                        .chain(constant(M.lift(b)))
+                        .chain(compose(M.modify)(constant))
+                        .chain(compose(M.modify)(function(a) {
+                            return function(b) {
+                                return Tuple2(x._1, b);
+                            };
+                        }))
+                        .chain(constant(M.get));
+                };
+            };
+        return function(a) {
+            var lens = Lens.objectLens('_2').run(a);
+            return lens.get().fold(M.of(''), rec(a));
+        };
+    },
+    // Replacement
+    replace = function(name) {
+        return function(a) {
+            return function(b) {
+                return b._1.replace(name, b._2);
+            };
+        };
+    },
+    replaceName = replace(/{{name}}/g),
+    replaceAttribute = replace(/{{attr}}/g),
+    replaceChild = replace(/{{children}}/g),
+    // Tag
     tag = function(a) {
         return function(b) {
             var M = State.StateT(IO),
@@ -105,7 +151,24 @@ var IO = require('fantasy-io'),
                 .chain(compose(M.modify)(replaceName))
                 .chain(constant(M.get))
                 .chain(compose(M.modify)(extractAttributes(a._1)))
+                .chain(compose(M.modify)(padAttributes))
                 .chain(compose(M.modify)(replaceAttribute))
+                .chain(constant(M.get))
+                .chain(compose(M.modify)(extractChildren(a._2)))
+                .chain(function(a) {
+                    return M.modify(function(b) {
+                        return chainChildren(a)(b).exec('');
+                    });
+                })
+                .chain(constant(M.get))
+                .chain(function(a) {
+                    return M.lift(a);
+                })
+                .chain(compose(M.modify)(function(a) {
+                    return function(b) {
+                        return a;
+                    };
+                }))
                 .chain(constant(M.get));
 
             return program;
@@ -128,9 +191,7 @@ function output(root) {
         .chain(function(a) {
             return M.lift(a);
         })
-        .chain(compose(M.modify)(function(a) {
-            return constant(a);
-        }))
+        .chain(compose(M.modify)(constant))
         .chain(constant(M.get));
 
     return program.exec('');
