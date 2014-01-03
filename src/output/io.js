@@ -170,7 +170,7 @@ var IO = require('fantasy-io'),
                 .chain(compose(M.modify)(function(a) {
                     return function(b) {
                         var result = b._1.replace(/{{children}}/g, a._2);
-                        return Tuple2(result, b._1);
+                        return Tuple2(result, result);
                     };
                 }))
                 .chain(constant(M.get));
