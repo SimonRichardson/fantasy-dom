@@ -10,7 +10,7 @@ module.exports = function (grunt) {
             nodeunit: {
                 all: [
                     //'test/*.js',
-                    'test/output/io.js'
+                    'test/output/*.js'
                 ]
             }
         };

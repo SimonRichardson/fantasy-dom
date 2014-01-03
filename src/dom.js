@@ -48,6 +48,7 @@ var Attr = require('./attr'),
         // Sections
         body: fruitful('body'),
         h1: fruitful('h1'),
+        div: fruitful('div')
     };
 
 // Export

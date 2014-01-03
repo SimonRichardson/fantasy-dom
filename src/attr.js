@@ -23,6 +23,11 @@ Attr.withIdent = function(a) {
         id: guid().unsafePerform()
     }));
 };
+Attr.withValue = function(a) {
+    return Attr({
+        'data-node-value': a
+    });
+};
 
 // Methods
 Attr.prototype.fold = function(f) {

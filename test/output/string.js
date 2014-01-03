@@ -24,7 +24,16 @@ var λ = require('../lib/test'),
                     ),
                     DOM.body(
                         Attr.of({className: 'body'}),
-                        Seq.empty()
+                        Seq.fromArray([
+                            DOM.h1(
+                                Attr.withValue(title),
+                                Seq.empty()
+                            ),
+                            DOM.div(
+                                Attr.withValue(title),
+                                Seq.empty()
+                            )
+                        ])
                     )
                 ])
             );
@@ -32,13 +41,17 @@ var λ = require('../lib/test'),
     scaffoldOutput = function(title) {
         return '<html><head><title>' +
                 title +
-                '</title></head><body class="body"></body></html>';
+                '</title></head><body class="body"><h1>' +
+                title +
+                '</h1><div>' +
+                title +
+                '</div></body></html>';
     };
 
 exports.string = {
     'when testing scaffolding output should return correct value': λ.check(
         function(a) {
-            return Output.string(scaffold(a)) === scaffoldOutput(a);
+            return Output.string(scaffold(a)).unsafePerform() === scaffoldOutput(a);
         },
         [String]
     )

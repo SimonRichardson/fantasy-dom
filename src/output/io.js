@@ -148,9 +148,18 @@ var IO = require('fantasy-io'),
             };
         };
     },
+    replaceChild = function(name) {
+        return function(a) {
+            return function(b) {
+                var result = b._1.replace(name, a._2);
+                return Tuple2(result, result);
+            };
+        };
+    },
     replaceName = replace(/{{name}}/g),
-    replaceAttribute = replace(/{{attr}}/g),
-    replaceValue = replace(/{{value}}/g),
+    replaceAttribute = replace(/{{attr}}/),
+    replaceValue = replace(/{{value}}/),
+    replaceChildren = replaceChild(/{{children}}/),
     // Tag
     tag = function(a) {
         return function(b) {
@@ -178,12 +187,7 @@ var IO = require('fantasy-io'),
                 .chain(function(a) {
                     return M.lift(a._2);
                 })
-                .chain(compose(M.modify)(function(a) {
-                    return function(b) {
-                        var result = b._1.replace(/{{children}}/g, a._2);
-                        return Tuple2(result, result);
-                    };
-                }))
+                .chain(compose(M.modify)(replaceChildren))
                 .chain(constant(M.get));
 
             return program;
