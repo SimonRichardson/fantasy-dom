@@ -169,11 +169,7 @@ var IO = require('fantasy-io'),
                 })
                 .chain(compose(M.modify)(function(a) {
                     return function(b) {
-                        // FIND UNDEFINED ORIGIN
-                        var result = b._1;
-                        if (typeof a._2 != 'undefined') {
-                            result = b._1.replace(/{{children}}/g, a._2);
-                        }
+                        var result = b._1.replace(/{{children}}/g, a._2);
                         return Tuple2(result, b._1);
                     };
                 }))
