@@ -109,25 +109,24 @@ var IO = require('fantasy-io'),
             return lens.set(pad);
         };
     },
-    // Chain
-    chainChildren = function() {
+    // Flatten
+    flattenChildren = function(a) {
+        var parent = a._1;
         var M = State.StateT(IO),
             rec = function(x) {
                 return function(a, b) {
                     return a
                         .chain(constant(M.lift(b)))
-                        .chain(compose(M.modify)(constant))
                         .chain(compose(M.modify)(function(a) {
                             return function(b) {
-                                return Tuple2(x._1, b);
+                                return Tuple2(a._1, b._1 + a._2);
                             };
                         }))
                         .chain(constant(M.get));
                 };
             };
         return function(a) {
-            var lens = Lens.objectLens('_2').run(a);
-            return lens.get().fold(M.of(''), rec(a));
+            return a._2.fold(M.of(''), rec(a));
         };
     },
     // Replacement
@@ -140,10 +139,10 @@ var IO = require('fantasy-io'),
     },
     replaceName = replace(/{{name}}/g),
     replaceAttribute = replace(/{{attr}}/g),
-    replaceChild = replace(/{{children}}/g),
     // Tag
     tag = function(a) {
         return function(b) {
+            var aa = a;
             var M = State.StateT(IO),
 
                 program = M.lift(defaultTag)
@@ -155,18 +154,25 @@ var IO = require('fantasy-io'),
                 .chain(compose(M.modify)(replaceAttribute))
                 .chain(constant(M.get))
                 .chain(compose(M.modify)(extractChildren(a._2)))
+                .chain(constant(M.get))
                 .chain(function(a) {
                     return M.modify(function(b) {
-                        return chainChildren(a)(b).exec('');
+                        var flattened = flattenChildren(a)(b);
+                        return Tuple2(b._1, flattened.exec(Tuple2('', '')));
                     });
                 })
                 .chain(constant(M.get))
                 .chain(function(a) {
-                    return M.lift(a);
+                    return M.lift(a._2);
                 })
                 .chain(compose(M.modify)(function(a) {
                     return function(b) {
-                        return a;
+                        // FIND UNDEFINED ORIGIN
+                        var result = b._1;
+                        if (typeof a._2 != 'undefined') {
+                            result = b._1.replace(/{{children}}/g, a._2);
+                        }
+                        return Tuple2(result, b._1);
                     };
                 }))
                 .chain(constant(M.get));

@@ -37,7 +37,8 @@ var λ = require('../lib/test'),
 
 exports.io = {
     'test': function(test) {
-        console.log(Output.io(scaffold(1)).unsafePerform());
+        console.log('\n----------------');
+        console.log('FIN : ', Output.io(scaffold(1)).unsafePerform());
         test.ok(true);
         test.done();
     }/*,
