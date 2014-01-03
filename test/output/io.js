@@ -14,7 +14,7 @@ var λ = require('../lib/test'),
 
     scaffold = function(title) {
         return DOM.html(
-                Attr.of({data: 'stuff'}),
+                Attr.empty(),
                 Seq.fromArray([
                     DOM.head(
                         Attr.empty(),
@@ -36,16 +36,10 @@ var λ = require('../lib/test'),
     };
 
 exports.io = {
-    'test': function(test) {
-        console.log('\n----------------');
-        console.log('FIN : ', Output.io(scaffold(1)).unsafePerform());
-        test.ok(true);
-        test.done();
-    }/*,
     'when testing scaffolding output should return correct value': λ.check(
         function(a) {
             return Output.io(scaffold(a)).unsafePerform() === scaffoldOutput(a);
         },
         [String]
-    )*/
+    )
 };

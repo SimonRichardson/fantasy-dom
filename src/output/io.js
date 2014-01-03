@@ -23,6 +23,10 @@ var IO = require('fantasy-io'),
     },
 
     M = State.StateT(IO),
+    Lenses = {
+        _1: Lens.objectLens('_1'),
+        _2: Lens.objectLens('_2')
+    },
 
     str = function(x) {
         return '' + x;
@@ -110,7 +114,7 @@ var IO = require('fantasy-io'),
     padAttributes = function() {
         return function(a) {
             // We have to pad for the attributes
-            var lens = Lens.objectLens('_2').run(a),
+            var lens = Lenses._2.run(a),
                 val = lens.get(),
                 pad = val.length > 1 ? ' ' + val : val;
 
@@ -125,7 +129,8 @@ var IO = require('fantasy-io'),
                         .chain(constant(M.lift(b)))
                         .chain(compose(M.modify)(function(a) {
                             return function(b) {
-                                return Tuple2(a._1, b._1 + a._2);
+                                var lens = Lenses._2.run(a);
+                                return lens.set(b._1 + lens.get());
                             };
                         }))
                         .chain(constant(M.get));
@@ -164,8 +169,9 @@ var IO = require('fantasy-io'),
                 .chain(constant(M.get))
                 .chain(function(a) {
                     return M.modify(function(b) {
-                        var flattened = flattenChildren(a)(b);
-                        return Tuple2(b._1, flattened.exec(Tuple2('', '')));
+                        var flattened = flattenChildren(a)(b),
+                            lens = Lenses._2.run(b);
+                        return lens.set(flattened.exec(Tuple2('', '')));
                     });
                 })
                 .chain(constant(M.get))
