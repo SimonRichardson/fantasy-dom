@@ -22,6 +22,8 @@ var IO = require('fantasy-io'),
         'data-node-value': Option.None
     },
 
+    M = State.StateT(IO),
+
     str = function(x) {
         return '' + x;
     },
@@ -117,9 +119,7 @@ var IO = require('fantasy-io'),
     },
     // Flatten
     flattenChildren = function(a) {
-        var parent = a._1;
-        var M = State.StateT(IO),
-            rec = function(x) {
+        var rec = function(x) {
                 return function(a, b) {
                     return a
                         .chain(constant(M.lift(b)))
@@ -149,10 +149,7 @@ var IO = require('fantasy-io'),
     // Tag
     tag = function(a) {
         return function(b) {
-            var aa = a;
-            var M = State.StateT(IO),
-
-                program = M.lift(defaultTag)
+            var program = M.lift(defaultTag)
                 .chain(compose(M.modify)(extractName(a._1)))
                 .chain(compose(M.modify)(replaceName))
                 .chain(constant(M.get))
@@ -185,30 +182,37 @@ var IO = require('fantasy-io'),
 
             return program;
         };
+    },
+    output = function(root) {
+        var program = M.lift(IO.of(root))
+            .chain(compose(M.modify)(constant))
+            .chain(compose(M.modify)(extract))
+            .chain(constant(M.get))
+            .chain(function(a) {
+                return M.modify(function(b) {
+                    return tag(a)(b).exec('');
+                });
+            })
+            .chain(constant(M.get))
+            .chain(function(a) {
+                return M.lift(a);
+            })
+            .chain(compose(M.modify)(constant))
+            .chain(constant(M.get));
+
+        return program.exec('');
     };
 
-function output(root) {
-    var M = State.StateT(IO),
-
-        program = M.lift(IO.of(root))
-        .chain(compose(M.modify)(constant))
-        .chain(compose(M.modify)(extract))
-        .chain(constant(M.get))
-        .chain(function(a) {
-            return M.modify(function(b) {
-                return tag(a)(b).exec('');
-            });
-        })
-        .chain(constant(M.get))
-        .chain(function(a) {
-            return M.lift(a);
-        })
-        .chain(compose(M.modify)(constant))
-        .chain(constant(M.get));
-
-    return program.exec('');
+function main(root) {
+    return M.lift(output(root))
+        .chain(compose(M.modify)(function(a) {
+            return function(b) {
+                return a._1;
+            };
+        }))
+        .exec('');
 }
 
 // Export
 if(typeof module != 'undefined')
-    module.exports = output;
+    module.exports = main;
