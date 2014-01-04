@@ -35,8 +35,6 @@ var λ = require('./lib/test'),
         return rec(a, '', 0);
     };
 
-λ.goal = 2;
-
 exports.tree = {
     
     // Applicative Functor tests
