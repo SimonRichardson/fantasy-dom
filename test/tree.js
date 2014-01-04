@@ -95,7 +95,7 @@ exports.tree = {
         },
         [Number]
     ),
-    /*'when testing find should return correct value': λ.check(
+    'when testing find should return correct value': λ.check(
         function(a) {
             var x = Tree.of(1).add(
                     Tree.of(2).add(
@@ -121,7 +121,7 @@ exports.tree = {
             );
         },
         [Number]
-    ),*/
+    ),
     'when testing toSeq should return correct value': λ.check(
         function(a, b) {
             var x = Tree.of(a).add(Tree.of(b));
