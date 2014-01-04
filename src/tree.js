@@ -95,7 +95,8 @@ Tree.prototype.find = function(f) {
             return a.cata({
                 Node: function(x, y) {
                     if(f(x)) {
-                        return Option.of(a);
+                        found = Option.of(a);
+                        return found;
                     } else {
                         return y.find(function(a) {
                             return rec(a).fold(
