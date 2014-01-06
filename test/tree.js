@@ -117,7 +117,7 @@ exports.tree = {
             );
         },
         [Number]
-    ),
+    )/*,
     'when testing size should return correct value': λ.check(
         function(a, b) {
             // TODO (Simon) : Implement random tree.
@@ -125,7 +125,7 @@ exports.tree = {
             return x.size() === [a, b].length;
         },
         [λ.AnyVal, λ.AnyVal]
-    ),
+    )*/,
     'when testing toSeq should return correct value': λ.check(
         function(a, b) {
             var x = Tree.of(a).add(Tree.of(b));

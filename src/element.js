@@ -5,7 +5,7 @@ var daggy = require('daggy'),
     constant = combinators.constant,
     identity = combinators.identity,
 
-    Element = daggy.tagged('x');
+    Element = daggy.tagged('elm');
 
 Element.of = function(a) {
     return Element(a);
@@ -13,7 +13,7 @@ Element.of = function(a) {
 
 // Methods
 Element.prototype.fold = function(f) {
-    return f(this.x);
+    return f(this.elm);
 };
 Element.prototype.chain = function(f) {
     return this.fold(f);
@@ -28,10 +28,10 @@ Element.prototype.map = function(f) {
 Element.prototype.sequence = function() {
     return this.traverse(function(x) {
         return x.traverse(identity, Element);
-    }, this.x.constructor);
+    }, this.elm.constructor);
 };
 Element.prototype.traverse = function(f, p) {
-    return p.of(f(this.x));
+    return p.of(f(this.elm));
 };
 
 // Common
@@ -60,11 +60,21 @@ Element.prototype.getByTagName = function(x) {
     }).map(Element.of);
 };
 Element.prototype.size = function() {
-    return this.fold(function(a) {
-        console.log('!!', a);
-        return a.size();
-    });
+    var rec = function(a, v) {
+        return a.fold(function(b) {
+            return b.cata({
+                Node: function(x, c) {
+                    return c.fold(v, function(a, b) {
+                        return rec(b, a + 1);
+                    });
+                }
+            });
+        });
+    };
+    return rec(this, 1);
 };
+
+
 
 // Export
 if(typeof module != 'undefined')

@@ -118,13 +118,13 @@ Tree.prototype.size = function(f) {
     var rec = function(a, v) {
         return a.cata({
             Node: function(x, c) {
-                return c.fold(v + 1, function(a, b) {
-                    return rec(b, a);
+                return c.fold(v, function(a, b) {
+                    return rec(b, a + 1);
                 });
             }
         });
     };
-    return rec(this, 0);
+    return rec(this, 1);
 };
 
 // IO

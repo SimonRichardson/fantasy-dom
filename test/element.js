@@ -67,5 +67,20 @@ exports.element = {
             );
         },
         [λ.AnyVal]
+    ),
+    'when calling size should return correct value': λ.check(
+        function(x) {
+            var a = DOM.h1(
+                Attr.empty(),
+                Seq.fromArray([
+                    DOM.x(x)(
+                        Attr.empty(),
+                        Seq.empty()
+                    )
+                ])
+            );
+            return a.size() === 2;
+        },
+        [λ.AnyVal]
     )
 };
