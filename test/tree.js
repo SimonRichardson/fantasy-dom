@@ -9,6 +9,7 @@ var λ = require('./lib/test'),
     monad = laws.monad,
 
     constant = λ.constant,
+    extend = λ.extend,
     identity = λ.identity,
 
     treeAsString = function(a) {
@@ -115,6 +116,44 @@ exports.tree = {
                 },
                 constant(false)
             );
+        },
+        [Number]
+    ),
+    'when testing flatten should return correct value': λ.check(
+        function(a, b, c, d) {
+            var x = Tree.of(a).add(
+                    Tree.of(b).add(
+                        Tree.of(c).add(
+                            Tree.of(d)
+                        )
+                    )
+                ),
+
+                y = x.flatten();
+
+            return λ.objectEquals(y.x, extend(a, extend(b, extend(c, d))));
+        },
+        [Object, Object, Object, Object]
+    ),
+    'when testing fold should return correct value': λ.check(
+        function(a) {
+            var x = Tree.of(1).add(
+                    Tree.of(2).add(
+                        Tree.of(a).add(
+                            Tree.of(4)
+                        )
+                    )
+                ).add(
+                    Tree.of(5)
+                ).add(
+                    Tree.of(6)
+                ),
+
+                y = x.fold(0, function(a, b) {
+                    return a + b;
+                });
+
+            return y === 18 + a;
         },
         [Number]
     ),

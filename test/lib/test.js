@@ -6,7 +6,9 @@ var λ = require('fantasy-check').adapters.nodeunit,
 
 λ = λ
     .property('identity', identity)
-    .property('equals', equals);
+    .property('equals', equals.arrayEquals)
+    .property('arrayEquals', equals.arrayEquals)
+    .property('objectEquals', equals.objectEquals);
 
 if (typeof module != 'undefined')
     module.exports = λ;

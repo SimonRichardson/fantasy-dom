@@ -1,12 +1,15 @@
 var daggy = require('daggy'),
     seq = require('fantasy-seqs'),
     combinators = require('fantasy-combinators'),
+    helpers = require('fantasy-helpers'),
     Option = require('fantasy-options'),
 
     Seq = seq.Seq,
 
     constant = combinators.constant,
     identity = combinators.identity,
+
+    extend = helpers.extend,
 
     Tree = daggy.taggedSum({
         Node: ['x', 'children']
@@ -17,6 +20,18 @@ Tree.of = function(a) {
 };
 
 // Methods
+Tree.prototype.fold = function(v, f) {
+    var rec = function(a, b) {
+        return a.cata({
+            Node: function(x, y) {
+                return y.fold(f(b, x), function(a, b) {
+                    return rec(b, a);
+                });
+            }
+        });
+    };
+    return rec(this, v);
+};
 Tree.prototype.chain = function(f) {
     var rec = function(a) {
         return a.cata({
@@ -113,6 +128,14 @@ Tree.prototype.find = function(f) {
         };
     rec(this);
     return found;
+};
+Tree.prototype.flatten = function() {
+    return Tree.Node(
+        this.fold({}, function(a, b) {
+            return extend(a, b);
+        }),
+        this.toSeq()
+    );
 };
 Tree.prototype.size = function(f) {
     var rec = function(a, v) {
