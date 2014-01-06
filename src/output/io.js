@@ -3,8 +3,13 @@ var IO = require('fantasy-io'),
     Option = require('fantasy-options'),
     
     combinators = require('fantasy-combinators'),
+    helpers = require('fantasy-helpers'),
     tuples = require('fantasy-tuples'),
     lenses = require('fantasy-lenses'),
+    names = require('../names'),
+
+    extend = helpers.extend,
+    singleton = helpers.singleton,
 
     compose = combinators.compose,
     constant = combinators.constant,
@@ -17,10 +22,10 @@ var IO = require('fantasy-io'),
     htmlIdentifiers = {
         'className': 'class'
     },
-    ignoreIdentifiers = {
-        'data-node-name': Option.None,
-        'data-node-value': Option.None
-    },
+    ignoreIdentifiers = extend(
+        singleton(names.nodeName, Option.None),
+        singleton(names.nodeValue, Option.None)
+    ),
 
     M = State.StateT(IO),
     Lenses = {
@@ -86,10 +91,10 @@ var IO = require('fantasy-io'),
             };
         };
     },
-    extractName = extractAttribute('data-node-name', function() {
+    extractName = extractAttribute(names.nodeName, function() {
         throw new TypeError('Unexpected TagName: name unknown.');
     }),
-    extractValue = extractAttribute('data-node-value', constant('')),
+    extractValue = extractAttribute(names.nodeValue, constant('')),
     extractAttributes = function(n) {
         return function(a) {
             return function(b) {

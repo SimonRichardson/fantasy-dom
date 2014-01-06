@@ -1,7 +1,7 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
     lenses = require('fantasy-lenses'),
-    guid = require('./guid'),
+    names = require('./names'),
 
     extend = helpers.extend,
     singleton = helpers.singleton,
@@ -19,15 +19,13 @@ Attr.empty = function() {
     return Attr({});
 };
 Attr.withIdent = function(a) {
-    return Attr(extend(a, {
-        // I don't like this here!
-        id: guid().unsafePerform()
-    }));
+    return Attr(singleton(names.ident, a));
+};
+Attr.withName = function(a) {
+    return Attr(singleton(names.nodeName, a));
 };
 Attr.withValue = function(a) {
-    return Attr({
-        'data-node-value': a
-    });
+    return Attr(singleton(names.nodeValue, a));
 };
 
 // Methods

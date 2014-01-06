@@ -1,7 +1,12 @@
 var λ = require('./lib/test'),
     laws = require('fantasy-check').laws,
-
+    seqs = require('fantasy-seqs'),
+    dom = require('./../fantasy-dom'),
     Element = require('./../src/element'),
+
+    Attr = dom.Attr,
+    DOM = dom.DOM,
+    Seq = seqs.Seq,
 
     functor = laws.functor,
     monad = laws.monad,
@@ -18,5 +23,16 @@ exports.element = {
     'All (Monad)': monad.laws(λ)(Element, identity),
     'Left Identity (Monad)': monad.leftIdentity(λ)(Element, identity),
     'Right Identity (Monad)': monad.rightIdentity(λ)(Element, identity),
-    'Associativity (Monad)': monad.associativity(λ)(Element, identity)
+    'Associativity (Monad)': monad.associativity(λ)(Element, identity),
+
+    // Common
+    'when calling getByIdent should return correct element': λ.check(
+        function(x) {
+            var a = Attr.withIdent(x),
+                b = a.get('id').x.get(),
+                c = DOM.h1(a, Seq.empty());
+            return c.getByIdent(x).x === c.x;
+        },
+        []
+    )
 };

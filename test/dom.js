@@ -7,16 +7,16 @@ var λ = require('./lib/test'),
 
 exports.dom = {
     'when testing getByIdent returns same element': λ.check(
-        function(x) {
-            var a = Attr.withIdent({}),
+        function(x, y) {
+            var a = Attr.withIdent(x),
                 b = a.get('id').x.get(),
                 c = DOM.h1(a, Seq.empty()).map(function(h1) {
                     return h1.map(function(attr) {
-                        return attr.update('id', x);
+                        return attr.update('id', y);
                     });
                 });
-            return c.getByIdent(x).x === c.x;
+            return c.getByIdent(y).x === c.x;
         },
-        [λ.AnyVal]
+        [λ.AnyVal, λ.AnyVal]
     )
 };

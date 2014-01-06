@@ -1,6 +1,7 @@
 var daggy = require('daggy'),
     Element = daggy.tagged('x'),
     combinators = require('fantasy-combinators'),
+    names = require('./names'),
 
     constant = combinators.constant;
 
@@ -27,13 +28,18 @@ Element.prototype.map = function(f) {
 Element.prototype.getByIdent = function(x) {
     return this.fold(function(a) {
         return a.find(function(attr) {
-            return attr.get('id').fold(
+            return attr.get(names.ident).fold(
                 function(y) {
                     return x === y.get();
                 },
                 constant(false)
             );
         });
+    });
+};
+Element.prototype.getByTagName = function() {
+    return this.fold(function(a) {
+        
     });
 };
 

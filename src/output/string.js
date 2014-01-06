@@ -2,18 +2,23 @@ var IO = require('fantasy-io'),
     Option = require('fantasy-options'),
     DOM = require('../dom'),
 
+    names = require('../names'),
     combinators = require('fantasy-combinators'),
+    helpers = require('fantasy-helpers'),
 
     compose = combinators.compose,
     constant = combinators.constant,
 
+    extend = helpers.extend,
+    singleton = helpers.singleton,
+
     htmlIdentifiers = {
         'className': 'class'
     },
-    ignoreIdentifiers = {
-        'data-node-name': Option.None,
-        'data-node-value': Option.None
-    },
+    ignoreIdentifiers = extend(
+        singleton(names.nodeName, Option.None),
+        singleton(names.nodeValue, Option.None)
+    ),
     rot = function (f) {
         return function() {
             var args = [].slice.call(arguments);
@@ -64,7 +69,7 @@ var IO = require('fantasy-io'),
             var w = serialiseAttributes(attr),
                 x = serialiseChildren(children),
                 y = w.length < 1 ? w : ' ' + w,
-                z = attr.get('data-node-value').fold(
+                z = attr.get(names.nodeValue).fold(
                     function(a) {
                         return a.get() + x;
                     },
@@ -79,12 +84,12 @@ var IO = require('fantasy-io'),
         return root.fold(function(x) {
             return x.cata({
                 Node: function(a, b) {
-                    return a.get('data-node-name').fold(
+                    return a.get(names.nodeName).fold(
                         function(x) {
                             return tag(x.get())(a, b);
                         },
                         function(y) {
-                            throw new Error('Expected Node name got nothing');
+                            throw new TypeError('Unexpected TagName: name unknown.');
                         }
                     );
                 }
