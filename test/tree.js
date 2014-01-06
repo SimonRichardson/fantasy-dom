@@ -1,16 +1,14 @@
 var λ = require('./lib/test'),
     laws = require('fantasy-check').laws,
-    combinators = require('fantasy-combinators'),
     Seq = require('fantasy-seqs').Seq,
 
     Tree = require('./../src/tree'),
-
-    constant = combinators.constant,
 
     applicative = laws.applicative,
     functor = laws.functor,
     monad = laws.monad,
 
+    constant = λ.constant,
     identity = λ.identity,
 
     treeAsString = function(a) {
@@ -119,6 +117,14 @@ exports.tree = {
             );
         },
         [Number]
+    ),
+    'when testing size should return correct value': λ.check(
+        function(a, b) {
+            // TODO (Simon) : Implement random tree.
+            var x = Tree.of(a).add(Tree.of(b));
+            return x.size() === [a, b].length;
+        },
+        [λ.AnyVal, λ.AnyVal]
     ),
     'when testing toSeq should return correct value': λ.check(
         function(a, b) {

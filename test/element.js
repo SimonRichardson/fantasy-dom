@@ -12,6 +12,7 @@ var λ = require('./lib/test'),
     functor = laws.functor,
     monad = laws.monad,
 
+    constant = λ.constant,
     identity = λ.identity;
 
 exports.element = {
@@ -33,6 +34,37 @@ exports.element = {
                 b = a.get(names.ident).x.get(),
                 c = DOM.h1(a, Seq.empty());
             return c.getByIdent(x).x instanceof Element;
+        },
+        [λ.AnyVal]
+    ),
+    'when calling getByIdent with incorrect id should return none': λ.check(
+        function(x) {
+            var a = Attr.withIdent('ident'),
+                b = a.get(names.ident).x.get(),
+                c = DOM.h1(a, Seq.empty());
+            return c.getByIdent(x).fold(
+                constant(false),
+                constant(true)
+            );
+        },
+        [λ.AnyVal]
+    ),
+    'when calling getByTagName should return correct instance': λ.check(
+        function(x) {
+            var a = DOM.x(x)(Attr.empty(), Seq.empty());
+            return a.getByTagName(x).x instanceof Element;
+        },
+        [λ.AnyVal]
+    ),
+    'when calling getByTagName with incorrect name should return zero length': λ.check(
+        function(x) {
+            var a = DOM.x('name')(Attr.empty(), Seq.empty());
+            return a.getByTagName(x).fold(
+                function(x) {
+                    return x.size() === 0;
+                },
+                constant(true)
+            );
         },
         [λ.AnyVal]
     )

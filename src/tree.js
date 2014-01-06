@@ -114,6 +114,18 @@ Tree.prototype.find = function(f) {
     rec(this);
     return found;
 };
+Tree.prototype.size = function(f) {
+    var rec = function(a, v) {
+        return a.cata({
+            Node: function(x, c) {
+                return c.fold(v + 1, function(a, b) {
+                    return rec(b, a);
+                });
+            }
+        });
+    };
+    return rec(this, 0);
+};
 
 // IO
 Tree.prototype.toSeq = function() {

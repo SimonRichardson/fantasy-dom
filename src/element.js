@@ -36,8 +36,7 @@ Element.prototype.traverse = function(f, p) {
 
 // Common
 Element.prototype.getByIdent = function(x) {
-    // Returns Element<Option<Tree>> need to return Option<Element<Tree>>
-    return this.map(function(a) {
+    return this.fold(function(a) {
         return a.find(function(attr) {
             return attr.get(names.ident).fold(
                 function(y) {
@@ -46,11 +45,24 @@ Element.prototype.getByIdent = function(x) {
                 constant(false)
             );
         });
-    }).sequence();
+    }).map(Element.of);
 };
-Element.prototype.getByTagName = function() {
+Element.prototype.getByTagName = function(x) {
     return this.fold(function(a) {
-        
+        return a.filter(function(attr) {
+            return attr.get(names.nodeName).fold(
+                function(y) {
+                    return x === y.get();
+                },
+                constant(false)
+            );
+        });
+    }).map(Element.of);
+};
+Element.prototype.size = function() {
+    return this.fold(function(a) {
+        console.log('!!', a);
+        return a.size();
     });
 };
 
