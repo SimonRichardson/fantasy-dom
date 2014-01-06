@@ -2,6 +2,7 @@ var λ = require('./lib/test'),
     laws = require('fantasy-check').laws,
     seqs = require('fantasy-seqs'),
     dom = require('./../fantasy-dom'),
+    names = require('./../src/names'),
     Element = require('./../src/element'),
 
     Attr = dom.Attr,
@@ -26,13 +27,13 @@ exports.element = {
     'Associativity (Monad)': monad.associativity(λ)(Element, identity),
 
     // Common
-    'when calling getByIdent should return correct element': λ.check(
+    'when calling getByIdent should return correct instance': λ.check(
         function(x) {
             var a = Attr.withIdent(x),
-                b = a.get('id').x.get(),
+                b = a.get(names.ident).x.get(),
                 c = DOM.h1(a, Seq.empty());
-            return c.getByIdent(x).x === c.x;
+            return c.getByIdent(x).x instanceof Element;
         },
-        []
+        [λ.AnyVal]
     )
 };

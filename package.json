@@ -24,7 +24,7 @@
     "fantasy-stores": "0.x.x",
     "fantasy-seqs": "0.x.x",
     "fantasy-io": "0.x.x",
-    "fantasy-options": "0.x.x",
+    "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-states": "0.x.x",
     "fantasy-tuples": "0.x.x"
   },

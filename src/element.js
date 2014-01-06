@@ -1,9 +1,11 @@
 var daggy = require('daggy'),
-    Element = daggy.tagged('x'),
     combinators = require('fantasy-combinators'),
     names = require('./names'),
 
-    constant = combinators.constant;
+    constant = combinators.constant,
+    identity = combinators.identity,
+
+    Element = daggy.tagged('x');
 
 Element.of = function(a) {
     return Element(a);
@@ -23,10 +25,19 @@ Element.prototype.map = function(f) {
         return Element.of(f(a));
     });
 };
+Element.prototype.sequence = function() {
+    return this.traverse(function(x) {
+        return x.traverse(identity, Element);
+    }, this.x.constructor);
+};
+Element.prototype.traverse = function(f, p) {
+    return p.of(f(this.x));
+};
 
 // Common
 Element.prototype.getByIdent = function(x) {
-    return this.fold(function(a) {
+    // Returns Element<Option<Tree>> need to return Option<Element<Tree>>
+    return this.map(function(a) {
         return a.find(function(attr) {
             return attr.get(names.ident).fold(
                 function(y) {
@@ -35,7 +46,7 @@ Element.prototype.getByIdent = function(x) {
                 constant(false)
             );
         });
-    });
+    }).sequence();
 };
 Element.prototype.getByTagName = function() {
     return this.fold(function(a) {
