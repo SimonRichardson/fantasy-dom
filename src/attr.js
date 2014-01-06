@@ -39,7 +39,7 @@ Attr.prototype.chain = function(f) {
 // Derived
 Attr.prototype.map = function(f) {
     return this.chain(function(a) {
-        return Attr(f(a));
+        return Attr.of(f(a));
     });
 };
 

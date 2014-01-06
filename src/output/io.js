@@ -65,12 +65,10 @@ var IO = require('fantasy-io'),
     // Extraction
     extract = function() {
         return function(a) {
-            return a.fold(function(x) {
-                return x.cata({
-                    Node: function(a, b) {
-                        return Tuple2(a, b);
-                    }
-                });
+            return a.cata({
+                Node: function(a, b) {
+                    return Tuple2(a, b);
+                }
             });
         };
     },

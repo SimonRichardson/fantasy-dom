@@ -4,13 +4,15 @@ module.exports = function (grunt) {
             jshint: {
                 all: [
                     'src/*.js',
-                    'src/output/*.js'
+                    'src/output/*.js',
+                    'src/selectors/*.js'
                 ]
             },
             nodeunit: {
                 all: [
                     'test/*.js',
-                    'test/output/*.js'
+                    'test/output/*.js',
+                    'test/selectors/*.js'
                 ]
             }
         };

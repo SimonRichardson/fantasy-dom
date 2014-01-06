@@ -81,19 +81,17 @@ var IO = require('fantasy-io'),
     },
 
     output = function(root) {
-        return root.fold(function(x) {
-            return x.cata({
-                Node: function(a, b) {
-                    return a.get(names.nodeName).fold(
-                        function(x) {
-                            return tag(x.get())(a, b);
-                        },
-                        function(y) {
-                            throw new TypeError('Unexpected TagName: name unknown.');
-                        }
-                    );
-                }
-            });
+        return root.cata({
+            Node: function(a, b) {
+                return a.get(names.nodeName).fold(
+                    function(x) {
+                        return tag(x.get())(a, b);
+                    },
+                    function(y) {
+                        throw new TypeError('Unexpected TagName: name unknown.');
+                    }
+                );
+            }
         });
     };
 

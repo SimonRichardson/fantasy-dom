@@ -1,5 +1,4 @@
 var Attr = require('./attr'),
-    Element = require('./element'),
     Tree = require('./tree'),
     helpers = require('fantasy-helpers'),
     seq = require('fantasy-seqs'),
@@ -11,15 +10,17 @@ var Attr = require('./attr'),
 
     fruitful = function(name) {
         return function(x, y) {
-            return Element.of(
-                Tree.Node(x.add(names.nodeName, name), y)
+            return Tree.Node(
+                x.add(names.nodeName, name),
+                y
             );
         };
     },
     childless = function(name) {
         return function(x) {
-            return Element.of(
-                Tree.Node(x.add(names.nodeName, name), Seq.empty())
+            return Tree.Node(
+                x.add(names.nodeName, name),
+                Seq.empty()
             );
         };
     },
@@ -29,11 +30,9 @@ var Attr = require('./attr'),
                 singleton(names.nodeName, name),
                 singleton(names.nodeValue, x)
             );
-            return Element.of(
-                Tree.Node(
-                    Attr.of(o),
-                    Seq.empty()
-                )
+            return Tree.Node(
+                Attr.of(o),
+                Seq.empty()
             );
         };
     };

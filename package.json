@@ -26,7 +26,8 @@
     "fantasy-io": "0.x.x",
     "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-states": "0.x.x",
-    "fantasy-tuples": "0.x.x"
+    "fantasy-tuples": "0.x.x",
+    "fantasy-environment": "0.0.x"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
