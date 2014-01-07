@@ -4,8 +4,16 @@ var daggy = require('daggy'),
 
 Stream.of = function(a) {
     return Stream(
-        function(next) {
-            return next(a);
+        function(next, done) {
+            next(a);
+            done();
+        }
+    );
+};
+Stream.empty = function() {
+    return Stream(
+        function(_, done) {
+            return done();
         }
     );
 };
@@ -14,11 +22,15 @@ Stream.of = function(a) {
 Stream.prototype.chain = function(f) {
     var env = this;
     return Stream(
-        function(next) {
+        function(next, done) {
             return env.fork(
                 function(x) {
-                    return f(x).fork(next);
-                }
+                    return f(x).fork(
+                        next,
+                        function() {}
+                    );
+                },
+                done
             );
         }
     );
@@ -29,6 +41,22 @@ Stream.prototype.ap = function(a) {
     return this.chain(
         function(f) {
             return a.map(f);
+        }
+    );
+};
+Stream.prototype.concat = function(a) {
+    var env = this;
+    return Stream(
+        function(next, done) {
+            return env.fork(
+                next,
+                function() {
+                    a.fork(
+                        next,
+                        done
+                    );
+                }
+            );
         }
     );
 };
