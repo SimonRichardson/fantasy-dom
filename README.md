@@ -2,6 +2,10 @@
 
 This library implements purely functional, monadic DOM structure.
 
+![](https://raw.github.com/puffnfresh/fantasy-land/master/logo.png)
+
+![](https://api.travis-ci.org/SimonRichardson/fantasy-dom.png)
+
 ### Guide
 
 The library implements its data structure a completely immutable 
