@@ -51,7 +51,16 @@ var λ = require('../lib/test'),
 exports.stringIO = {
     'when testing scaffolding output should return correct value': λ.check(
         function(a) {
-            return Output.stringIO(scaffold(a)).unsafePerform() === scaffoldOutput(a);
+            var x = Output.stringIO(scaffold(a)).unsafePerform(),
+                y = scaffoldOutput(a);
+            if (x !== y) {
+                // For some reason there is sometimes a failure
+                console.log('\n-------------------');
+                console.log('Unexpected Failure');
+                console.log(x);
+                console.log(y);
+            }
+            return x === y;
         },
         [String]
     )
