@@ -48,10 +48,10 @@ var λ = require('../lib/test'),
                 '</div></body></html>';
     };
 
-exports.io = {
+exports.stringIO = {
     'when testing scaffolding output should return correct value': λ.check(
         function(a) {
-            return Output.io(scaffold(a)).unsafePerform() === scaffoldOutput(a);
+            return Output.stringIO(scaffold(a)).unsafePerform() === scaffoldOutput(a);
         },
         [String]
     )

@@ -5,7 +5,7 @@ var env = require('fantasy-environment'),
 
     Output = env()
         .property('dom', require('./src/output/dom'))
-        .property('io', require('./src/output/io'))
+        .property('stringIO', require('./src/output/string-io'))
         .property('string', require('./src/output/string')),
     Selectors = env()
         .property('getByIdent', require('./src/selectors/get-by-ident'))
