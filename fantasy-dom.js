@@ -4,11 +4,12 @@ var env = require('fantasy-environment'),
     names = require('./src/names'),
 
     Output = env()
+        .property('dom', require('./src/output/dom'))
         .property('io', require('./src/output/io'))
         .property('string', require('./src/output/string')),
     Selectors = env()
-        .property('getByIdent', require('./src/selectors/getByIdent'))
-        .property('getByTagName', require('./src/selectors/getByTagName'))
+        .property('getByIdent', require('./src/selectors/get-by-ident'))
+        .property('getByTagName', require('./src/selectors/get-by-tag-name'))
         .property('query', require('./src/selectors/query')),
     λ = env()
         .property('Attr', Attr)

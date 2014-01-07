@@ -8,7 +8,8 @@ var λ = require('fantasy-check').adapters.nodeunit,
     .property('identity', identity)
     .property('equals', equals.arrayEquals)
     .property('arrayEquals', equals.arrayEquals)
-    .property('objectEquals', equals.objectEquals);
+    .property('objectEquals', equals.objectEquals)
+    .property('deepEquals', equals.deepEquals);
 
 if (typeof module != 'undefined')
     module.exports = λ;
