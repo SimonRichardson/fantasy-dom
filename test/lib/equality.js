@@ -28,7 +28,8 @@ function deepEquals(a, b) {
         result,
         o;
 
-    if (type !== typeof b) return false;
+    if (a === b) return true;
+    else if (type !== typeof b) return false;
     else if(type === 'NaN') return isNaN(a) && isNaN(b);
     else if(a === null || (type !== 'object' && type !== 'function')) return a === b;
     else if(type === 'function') return a.constructor === b.constructor;

@@ -22,6 +22,7 @@ var daggy = require('daggy'),
     initElement = function(x) {
         x.attributes = {};
         x.children = [];
+        x.ownerDocument = mock;
         return x;
     },
     initDocumentFragment = function(x) {
@@ -44,6 +45,9 @@ var daggy = require('daggy'),
             return x;
         }
     };
+
+// Create well known locations
+mock.body = mock.createElement('body');
 
 // Apply the mixins
 mixins.Attribute(mixins.Node(Element));

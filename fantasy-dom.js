@@ -1,5 +1,6 @@
 var env = require('fantasy-environment'),
     Attr = require('./src/attr'),
+    Component = require('./src/component'),
     DOM = require('./src/dom'),
     names = require('./src/names'),
 
@@ -13,6 +14,7 @@ var env = require('fantasy-environment'),
         .property('query', require('./src/selectors/query')),
     λ = env()
         .property('Attr', Attr)
+        .property('Component', Component)
         .property('DOM', DOM)
         .property('names', names)
         .property('Output', Output)

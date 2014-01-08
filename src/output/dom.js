@@ -101,8 +101,9 @@ var IO = require('fantasy-io'),
 function main(doc) {
     return function(root) {
         return IO(function() {
-            var frag = doc.createDocumentFragment();
-            output(doc, frag)(root);
+            var a = doc.ownerDocument || doc,
+                frag = a.createDocumentFragment();
+            output(a, frag)(root);
             return frag;
         });
     };
