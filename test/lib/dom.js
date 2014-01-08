@@ -39,7 +39,11 @@ var daggy = require('daggy'),
         },
         Node: function(x) {
             x.prototype.appendChild = function(node) {
-                this.children.push(node);
+                if (node instanceof DocumentFragment) {
+                    this.children.push.apply(this.children, node.children);
+                } else {
+                    this.children.push(node);
+                }
                 return node;
             };
             return x;

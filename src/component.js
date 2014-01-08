@@ -2,10 +2,13 @@ var daggy = require('daggy'),
     IO = require('fantasy-io'),
     State = require('fantasy-states'),
     combinators = require('fantasy-combinators'),
+    tuples = require('fantasy-tuples'),
     dom = require('./output/dom'),
 
     compose = combinators.compose,
     constant = combinators.constant,
+
+    Tuple2 = tuples.Tuple2,
 
     Component = daggy.tagged('x');
 
@@ -39,14 +42,20 @@ Component.prototype.append = function(a) {
             .chain(constant(M.get))
             .chain(function(a) {
                 return M.modify(function(b) {
-                    return dom(b)(x);
+                    return Tuple2(dom(b)(x), b);
                 });
             })
             .chain(constant(M.get))
             .chain(function(a) {
-                return M.lift(a);
+                return M.lift(a._1);
             })
-            .chain(compose(M.modify)(constant))
+            .chain(compose(M.modify)(function(a) {
+                return function(b) {
+                    // Finally append the fragment to the
+                    // required DOM element
+                    return b._2.appendChild(a);
+                };
+            }))
             .chain(constant(M.get));
 
         return program.exec();

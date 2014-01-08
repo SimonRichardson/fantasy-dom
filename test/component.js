@@ -1,31 +1,63 @@
 var λ = require('./lib/test'),
     IO = require('fantasy-io'),
     Seq = require('fantasy-seqs').Seq,
-
+    
     mock = require('./lib/dom'),
     dom = require('./../fantasy-dom'),
     names = require('./../src/names'),
-    tuples = require('fantasy-tuples'),
+
+    laws = require('fantasy-check').laws,
+
+    functor = laws.functor,
+    monad = laws.monad,
 
     Attr = dom.Attr,
     Component = dom.Component,
     DOM = dom.DOM,
 
-    Tuple2 = tuples.Tuple2;
+    identity = λ.identity,
+
+    scaffoldOutput = function(ident, name) {
+        var body = mock.createElement('body'),
+            h1 = mock.createElement('h1'),
+            h1Text = mock.createTextNode(name);
+
+        h1.setAttribute(names.ident, ident);
+
+        body.appendChild(h1);
+        h1.appendChild(h1Text);
+
+        return body;
+    };
 
 exports.component = {
+
+    // Functor tests
+    'All (Functor)': functor.laws(λ)(Component.of, identity),
+    'Identity (Functor)': functor.identity(λ)(Component.of, identity),
+    'Composition (Functor)': functor.composition(λ)(Component.of, identity),
+
+    // Monad tests
+    'All (Monad)': monad.laws(λ)(Component, identity),
+    'Left Identity (Monad)': monad.leftIdentity(λ)(Component, identity),
+    'Right Identity (Monad)': monad.rightIdentity(λ)(Component, identity),
+    'Associativity (Monad)': monad.associativity(λ)(Component, identity),
+
+    // Common
     'when testing component append create state affect': λ.check(
         function(x, y) {
-            var a = Attr.withIdent(x).add(names.nodeValue, x),
-                b = DOM.h1(a, Seq.empty()),
-                c = Component.of(b).append(IO(function() {
-                    return mock.body;
-                }));
+            var a = mock.createElement('body'),
 
-            console.log(c.unsafePerform());
+                b = Attr.withIdent(x).add(names.nodeValue, y),
+                c = DOM.h1(b, Seq.empty()),
+                d = Component.of(c).append(IO.of(a)),
 
-            return true;
+                e = scaffoldOutput(x, y);
+
+            d.unsafePerform();
+
+            return λ.deepEquals(a, e);
         },
-        [String]
+        [String, String]
     )
 };

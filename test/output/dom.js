@@ -67,7 +67,7 @@ var λ = require('../lib/test'),
                 div.appendChild(divText);
 
                 return body;
-            };
+            },
 
             frag = mock.createDocumentFragment();
 

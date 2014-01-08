@@ -10,6 +10,7 @@ var λ = require('./lib/test'),
     identity = λ.identity;
 
 exports.attr = {
+
     // Functor tests
     'All (Functor)': functor.laws(λ)(Attr.of, identity),
     'Identity (Functor)': functor.identity(λ)(Attr.of, identity),
