@@ -147,14 +147,14 @@ var IO = require('fantasy-io'),
     replace = function(name) {
         return function(a) {
             return function(b) {
-                return b._1.replace(name, b._2);
+                return b._1.replace(name, constant(b._2));
             };
         };
     },
     replaceChild = function(name) {
         return function(a) {
             return function(b) {
-                var result = b._1.replace(name, a._2);
+                var result = b._1.replace(name, constant(a._2));
                 return Tuple2(result, result);
             };
         };

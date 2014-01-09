@@ -53,13 +53,7 @@ exports.stringIO = {
         function(a) {
             var x = Output.stringIO(scaffold(a)).unsafePerform(),
                 y = scaffoldOutput(a);
-            if (x !== y) {
-                // For some reason there is sometimes a failure
-                console.log('\n-------------------');
-                console.log('Unexpected Failure');
-                console.log(x);
-                console.log(y);
-            }
+
             return x === y;
         },
         [String]
