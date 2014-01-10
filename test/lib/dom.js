@@ -22,10 +22,12 @@ var daggy = require('daggy'),
     initElement = function(x) {
         x.attributes = {};
         x.children = [];
+        x.events = [];
         x.ownerDocument = mock;
         return x;
     },
     initDocumentFragment = function(x) {
+        x.events = [];
         return x;
     },
 
@@ -47,6 +49,34 @@ var daggy = require('daggy'),
                 return node;
             };
             return x;
+        },
+        EventTarget: function(x) {
+            x.prototype.addEventListener = function(type, func) {
+                this.events.push({
+                    type: type,
+                    func: func
+                });
+            };
+            x.prototype.removeEventListener = function(type, func) {
+                var event,
+                    i;
+                for(i = 0; i < this.events.length; i++) {
+                    event = this.events[i];
+                    if (event.type === type && event.func === func) {
+                        this.events.splice(i, 1);
+                        break;
+                    }
+                }
+            };
+            x.prototype.dispatchEvent = function(event) {
+                var i;
+                for(i = 0; i < this.events.length; i++) {
+                    if (this.events[i].type === event.type) {
+                        this.events[i].func(event);
+                        break;
+                    }
+                }
+            };
         }
     };
 
@@ -54,8 +84,18 @@ var daggy = require('daggy'),
 mock.body = mock.createElement('body');
 
 // Apply the mixins
-mixins.Attribute(mixins.Node(Element));
-mixins.Node(DocumentFragment);
+mixins.EventTarget(
+    mixins.Attribute(
+        mixins.Node(
+            Element
+        )
+    )
+);
+mixins.EventTarget(
+    mixins.Node(
+        DocumentFragment
+    )
+);
 
 if (typeof module != 'undefined')
     module.exports = mock;

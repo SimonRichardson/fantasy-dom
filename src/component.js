@@ -4,6 +4,7 @@ var daggy = require('daggy'),
     combinators = require('fantasy-combinators'),
     tuples = require('fantasy-tuples'),
     dom = require('./output/dom'),
+    getByIdent = require('./selectors/get-by-ident'),
 
     compose = combinators.compose,
     constant = combinators.constant,
@@ -60,6 +61,47 @@ Component.prototype.append = function(a) {
 
         return program.exec();
     });
+};
+Component.prototype.attach = function(target) {
+    var M = State.StateT(IO),
+        m = this;
+    return function(types) {
+        return m.fold(function(x) {
+            var find = getByIdent(x),
+                addListeners = function(target, types) {
+                    var listener = function(callback) {
+                            return function(e) {
+                                find(e.target.id).map(
+                                    function(e) {
+                                        return callback(m, e);
+                                    }
+                                ).map(
+                                    function(s) {
+                                        if (m !== s) {
+                                            // TODO (Simon) : Re-render on change
+                                            console.log('Re-render', m.x.x.x, s.x.x.x);
+                                        }
+                                    }
+                                );
+                            };
+                        },
+                        type;
+                    for(type in types) {
+                        target.addEventListener(type, listener(types[type]));
+                    }
+                },
+                program = M.lift(target)
+                    .chain(compose(M.modify)(constant))
+                    .chain(function(a) {
+                        return M.modify(function(b) {
+                            addListeners(b, types);
+                            return b;
+                        });
+                    });
+
+            return program.exec();
+        });
+    };
 };
 
 // Export
