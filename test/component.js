@@ -31,8 +31,6 @@ var λ = require('./lib/test'),
         return body;
     };
 
-λ.goal = 1;
-
 exports.component = {
 
     // Functor tests

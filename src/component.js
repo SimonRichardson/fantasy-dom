@@ -4,10 +4,12 @@ var daggy = require('daggy'),
     combinators = require('fantasy-combinators'),
     tuples = require('fantasy-tuples'),
     dom = require('./output/dom'),
+    event = require('./events/event'),
     getByIdent = require('./selectors/get-by-ident'),
 
     compose = combinators.compose,
     constant = combinators.constant,
+    identity = combinators.identity,
 
     Tuple2 = tuples.Tuple2,
 
@@ -69,25 +71,30 @@ Component.prototype.attach = function(target) {
         return m.fold(function(x) {
             var find = getByIdent(x),
                 addListeners = function(target, types) {
-                    var listener = function(callback) {
+                    var stream = event(target),
+                        locate = function(e) {
+                            return find(e.target.id);
+                        },
+                        invoke = function(callback) {
                             return function(e) {
-                                find(e.target.id).map(
-                                    function(e) {
-                                        return callback(m, e);
-                                    }
-                                ).map(
-                                    function(s) {
-                                        if (m !== s) {
-                                            // TODO (Simon) : Re-render on change
-                                            console.log('Re-render', m.x.x.x, s.x.x.x);
-                                        }
-                                    }
-                                );
+                                return callback(m, e);
                             };
+                        },
+                        render = function(s) {
+                            if (m !== s) {
+                                // TODO (Simon) : Re-render on change
+                                console.log('Re-render', m.x.x.x, s.x.x.x);
+                            }
                         },
                         type;
                     for(type in types) {
-                        target.addEventListener(type, listener(types[type]));
+                        stream(type)
+                            .map(find)
+                            .map(invoke(types[type]))
+                            .fork(
+                                render,
+                                identity
+                            );
                     }
                 },
                 program = M.lift(target)
